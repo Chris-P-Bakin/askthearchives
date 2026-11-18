@@ -1,0 +1,19 @@
+[Unit]
+Description=Ask the Archives public MCP server
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/data_normalizing
+Environment=ARCHIVES_HOST=127.0.0.1
+Environment=ARCHIVES_DB=%h/data_normalizing/data/corpus.db
+Environment=ARCHIVES_DATA=%h/data_normalizing/data
+Environment=ARCHIVES_SPOOL=%h/data_normalizing/data/mcp_requests.ndjson
+Environment=ARCHIVES_RATE=5
+Environment=ARCHIVES_BURST=20
+ExecStart=%h/data_normalizing/.venv/bin/python -m mcp_server.server
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

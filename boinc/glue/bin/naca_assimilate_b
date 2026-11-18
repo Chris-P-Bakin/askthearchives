@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+"""script_assimilator for the batched app: naca_assimilate_b <wu_name> <results.jsonl> <batch.meta.json>.
+GT acceptance batches (wu name naca_b_gt_*) route to layer vision_8bwin.
+Failed-WU callback (--error N wu_name wu_id batch_id) records a wu_error row like naca_assimilate."""
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+import naca_hooklib as h
+
+if len(sys.argv) > 1 and sys.argv[1] == "--error":
+    print(f"naca_assimilate_b: workunit failed: {' '.join(sys.argv[2:])}", file=sys.stderr)
+    try:
+        h.record_wu_error(sys.argv[1:])
+    except Exception as e:
+        print(f"naca_assimilate_b: could not record wu_error: {e!r}", file=sys.stderr)
+    sys.exit(0)
+if len(sys.argv) != 4:
+    print("usage: naca_assimilate_b <wu_name> <results.jsonl> <batch.meta.json>", file=sys.stderr)
+    sys.exit(1)
+_, results, meta = sys.argv[1:]
+wu = h.wu_name_from_output_path(results)
+extra = ["--data-root", h.DATA_ROOT, "--wu-name", wu]
+if wu.startswith("naca_b_gt_"):
+    extra += ["--layer", "vision_8bwin"]
+sys.exit(h.run_batch_cli("batch_assimilate.py", wu, results, meta, extra))

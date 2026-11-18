@@ -1,0 +1,29 @@
+{
+ "id": 19660081202,
+ "title": "Evolution of the helicopter",
+ "downloads": [
+  {
+   "draft": false,
+   "mimetype": "application/pdf",
+   "name": "19660081202.pdf",
+   "type": "STI",
+   "links": {
+    "original": "/api/citations/19660081202/downloads/19660081202.pdf",
+    "pdf": "/api/citations/19660081202/downloads/19660081202.pdf",
+    "fulltext": "/api/citations/19660081202/downloads/19660081202.txt"
+   }
+  }
+ ],
+ "publications": [
+  {
+   "submissionId": 19660081202,
+   "id": "5772dbc2fd7d4374b6270ca2d8161f14",
+   "publicationDate": "1923-03-01T00:00:00.0000000+00:00"
+  }
+ ],
+ "otherReportNumbers": [
+  "NACA-TM-196",
+  "Report Number: NACA-TM-196"
+ ],
+ "stiTypeDetails": "Other - NACA Technical Memorandum"
+}

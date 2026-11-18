@@ -1,0 +1,15 @@
+[Unit]
+Description=Cloudflare tunnel (docker) for the Ask the Archives public MCP endpoint
+After=network-online.target archives-mcp.service
+Wants=network-online.target
+
+[Service]
+EnvironmentFile=%h/data_normalizing/deploy/secrets-local/tunnel.env
+ExecStartPre=-/usr/bin/docker rm -f cloudflared-naca
+ExecStart=/usr/bin/docker run --rm --name cloudflared-naca --network host -e TUNNEL_TOKEN cloudflare/cloudflared:latest tunnel --metrics 127.0.0.1:2000 --no-autoupdate run
+ExecStop=/usr/bin/docker stop cloudflared-naca
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,35 @@
+# Override for boinc-server-docker (applied on top of boinc/server/docker-compose.yml).
+# Paths are relative to --project-directory boinc/server.
+services:
+  mysql:
+    container_name: naca-boinc-mysql
+    # no published ports: only reachable on the compose network
+
+  makeproject:
+    volumes:
+      # generated per-install secrets (gitignored under boinc/server/); replaces the
+      # upstream image's hard-coded DB_PASSWD=password
+      - "./secrets-local/secrets.env:/run/secrets/secrets.env:ro"
+
+  apache:
+    container_name: naca-boinc-apache
+    # published on the tailnet address ONLY (never 0.0.0.0 / LAN)
+    ports: !override
+      - "<TAILNET_IP>:80:80"
+    volumes: !override
+      - "project:$PROJECT_ROOT"
+      - "results:/results"
+      - "secrets:/run/secrets"
+      - "./secrets-local/secrets.env:/run/secrets/secrets.env:ro"
+      - "/dev/null:/run/secrets/keys/code_sign_private"
+      - "apachelogs:/var/log/apache2"
+      # NOTE: upstream mounts /var/run/docker.sock here (root-equivalent on the host);
+      # dropped - only the b2d variant needs it.
+      # --- NACA glue ---
+      # glue (templates + validator/assimilator wrappers) is symlinked into the project
+      # tree by boinc/install_project.sh; bind-mounting into the empty project volume
+      # would leave root-owned dirs that break makeproject-step2
+      - "../glue:/naca/glue:ro"
+      - "../../pipeline:/naca/pipeline:ro"
+      - "../../data:/naca/data"
+      - "../stage:/naca/stage"
