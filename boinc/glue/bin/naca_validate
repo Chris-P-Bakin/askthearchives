@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+"""script_validator init_script: naca_validate <result.txt> <result.meta.json>.
+Configured as bare `--init_script naca_validate` (BOINC then appends the output file paths;
+the two-token form `\"naca_validate files\"` passed no paths in this build)."""
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+import naca_hooklib as h
+
+if len(sys.argv) != 3:
+    print("usage: naca_validate <result.txt> <result.meta.json>", file=sys.stderr)
+    sys.exit(h.VAL_RESULT_TRANSIENT_ERROR)   # re-validate later rather than invalidate
+try:
+    uid = h.unit_id_from_output_path(sys.argv[1])
+    rc = h.run_cli("unit_validate.py", uid, sys.argv[1], sys.argv[2])
+except Exception as e:                        # infra problem, not a bad result
+    print(f"naca_validate infra error: {e!r}", file=sys.stderr)
+    sys.exit(h.VAL_RESULT_TRANSIENT_ERROR)
+# unit_validate: 0 valid, 1 invalid; anything else is a tooling failure
+sys.exit(rc if rc in (0, 1) else h.VAL_RESULT_TRANSIENT_ERROR)   # crash/missing input (99) -> defer

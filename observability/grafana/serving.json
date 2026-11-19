@@ -1,0 +1,305 @@
+{
+  "uid": "archives-serving",
+  "title": "Archives serving",
+  "tags": [
+    "archives"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "1m",
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "editable": true,
+  "panels": [
+    {
+      "id": 9,
+      "title": "Requests/min by status",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "archives-ch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "stacking": {
+              "mode": "normal"
+            },
+            "fillOpacity": 40
+          }
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "archives-ch"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "timeseries",
+          "rawSql": "SELECT toStartOfInterval(ts, INTERVAL 1 MINUTE) AS time, status AS metric, count() AS value FROM archives.requests WHERE $__timeFilter(ts) GROUP BY time, metric ORDER BY time"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Searches + pages served per hour",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "archives-ch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "archives-ch"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "timeseries",
+          "rawSql": "SELECT toStartOfInterval(ts, INTERVAL 1 HOUR) AS time, tool AS metric, count() AS value FROM archives.requests WHERE $__timeFilter(ts) AND tool IN ('search','get_page','get_page_image') AND status = 'ok' GROUP BY time, metric ORDER BY time"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "title": "Degraded-search rate",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "archives-ch"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "archives-ch"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "timeseries",
+          "rawSql": "SELECT toStartOfInterval(ts, INTERVAL 1 HOUR) AS time, avg(degraded) AS value FROM archives.requests WHERE $__timeFilter(ts) AND tool = 'search' AND status IN ('ok','error') GROUP BY time ORDER BY time"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "title": "Latency p50 / p95 (ms, status ok)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "archives-ch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "archives-ch"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "timeseries",
+          "rawSql": "SELECT toStartOfInterval(ts, INTERVAL 1 MINUTE) AS time, quantile(0.5)(duration_ms) AS p50, quantile(0.95)(duration_ms) AS p95 FROM archives.requests WHERE $__timeFilter(ts) AND status = 'ok' GROUP BY time ORDER BY time"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "title": "Error rate (error / ok+error)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "archives-ch"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "archives-ch"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "timeseries",
+          "rawSql": "SELECT toStartOfInterval(ts, INTERVAL 1 MINUTE) AS time, countIf(status = 'error') / count() AS value FROM archives.requests WHERE $__timeFilter(ts) AND status IN ('ok','error') GROUP BY time ORDER BY time"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "title": "Egress MB/h (result bytes)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "archives-ch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 24,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "decmbytes"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "archives-ch"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "timeseries",
+          "rawSql": "SELECT toStartOfInterval(ts, INTERVAL 1 HOUR) AS time, sum(bytes) / 1048576 AS value FROM archives.requests WHERE $__timeFilter(ts) AND status = 'ok' GROUP BY time ORDER BY time"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "title": "Tunnel egress MB/h (cloudflared muxer out)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "archives-ch"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 24,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "decmbytes"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "archives-ch"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "timeseries",
+          "rawSql": "SELECT time, metric, sum(d) AS value FROM (SELECT time, metric, greatest(0, v - lagInFrame(v, 1, v) OVER (PARTITION BY metric, series ORDER BY time ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)) * 1/1048576 AS d FROM (SELECT toStartOfInterval(ts, INTERVAL 1 HOUR) AS time, name AS metric, toString(labels) AS series, max(value) AS v FROM archives.samples WHERE $__timeFilter(ts) AND name LIKE 'cloudflared_muxer_%' AND positionCaseInsensitive(name, 'out') > 0 GROUP BY time, metric, series)) GROUP BY time, metric ORDER BY time"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "title": "Tunnel request errors/h",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "archives-ch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 32,
+        "w": 24,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "archives-ch"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "timeseries",
+          "rawSql": "SELECT time, metric, sum(d) AS value FROM (SELECT time, metric, greatest(0, v - lagInFrame(v, 1, v) OVER (PARTITION BY metric, series ORDER BY time ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)) * 1 AS d FROM (SELECT toStartOfInterval(ts, INTERVAL 1 HOUR) AS time, '' AS metric, toString(labels) AS series, max(value) AS v FROM archives.samples WHERE $__timeFilter(ts) AND name = 'cloudflared_tunnel_request_errors' GROUP BY time, metric, series)) GROUP BY time, metric ORDER BY time"
+        }
+      ]
+    }
+  ],
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  }
+}

@@ -1,0 +1,13 @@
+Transcribe ALL printed text on this scanned NACA report page, exactly as printed.
+
+Rules:
+- Reading order: left column then right, top to bottom.
+- Include running headers and printed page numbers on their own lines.
+- Rejoin words hyphenated at line breaks (write "moment", not "mo-ment").
+- Tables: one printed row per line, cells separated by " | ", including header rows. Read strictly row-wise: each output line spans the table's full printed width, even when the table looks like side-by-side sub-tables. Never transcribe a table column by column.
+- Equations: LaTeX; display equations as $$...$$ on their own line, inline math as $...$.
+- Figure pages: transcribe titles, captions, legend text, axis labels and tick numerals. Do NOT describe the imagery.
+- Struck-through classification stamps: transcribe the stamped word if legible under the strike.
+- If a span is genuinely unreadable, write <?> in its place. NEVER invent plausible text you cannot actually read. If the page is blank, output nothing.
+
+Output the transcription only - no commentary, no markdown fences.

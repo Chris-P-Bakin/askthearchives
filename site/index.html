@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ask the Archives</title>
+<meta name="description" content="Open, machine-transcribed data archives, searchable through a public MCP endpoint. Collections: NACA Technical Reports (1915-1958); U.S. National Archives Catalog in preparation. Transcriptions released CC0.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='5' width='28' height='3' fill='%232e4a78'/%3E%3Ctext x='16' y='25' text-anchor='middle' font-family='Georgia,serif' font-weight='bold' font-size='18' fill='%232e4a78'%3EA%3C/text%3E%3Crect x='2' y='28' width='28' height='1.5' fill='%232e4a78'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<meta name="theme-color" content="#f7f6f1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17181b" media="(prefers-color-scheme: dark)">
+<style>
+/* Layout: a single report-page column, ruled like a 1915 report title block; the contents table is the one bold element. */
+:root{
+  --paper:#f7f6f1;        /* aged document white, cool not cream */
+  --ink:#211e19;          /* letterpress ink */
+  --muted:#5d5950;
+  --rule:#3a362f;         /* ruled lines */
+  --rule-faint:#c9c5ba;
+  --stamp:#2e4a78;        /* engineer's ink blue: links, stamps */
+  --code-bg:#edebe3;
+  --display:"Old Standard TT",Georgia,"Times New Roman",serif;
+  --body:"Source Serif 4",Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --paper:#17181b; --ink:#e4e1d8; --muted:#9b978c; --rule:#b7b3a8; --rule-faint:#3d3e42;
+  --stamp:#90b0e0; --code-bg:#22232a; color-scheme:dark;
+}}
+body{
+  background:var(--paper); color:var(--ink);
+  font:400 17px/1.65 var(--body);
+  margin:0;
+  padding-block:0 4rem;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+}
+main{max-width:44rem;margin:0 auto}
+a{color:var(--stamp);text-decoration-thickness:1px;text-underline-offset:2px}
+h2{font:700 1.35rem/1.25 var(--display);letter-spacing:.02em;margin:2.8rem 0 .7rem;text-wrap:balance}
+p{margin:.65rem 0}
+code{font-family:var(--mono);font-size:.84em}
+pre{font-family:var(--mono);font-size:.8rem;line-height:1.55;background:var(--code-bg);
+    padding:.85rem 1rem;overflow-x:auto;margin:.8rem 0;border-left:3px solid var(--stamp)}
+pre code{font-size:inherit}
+
+/* ---- title block ---- */
+header{text-align:center;padding-top:2.6rem}
+.rule2{border:0;border-top:3px double var(--rule);margin:0}
+.rule1{border:0;border-top:1px solid var(--rule);margin:0}
+header .inner{padding:1.6rem 0 1.4rem}
+.masthead{font:700 clamp(2rem,7vw,3.1rem)/1.1 var(--display);letter-spacing:.09em;
+          text-transform:uppercase;margin:0;text-wrap:balance}
+.sub{font:italic 400 1.12rem/1.5 var(--display);color:var(--ink);margin:.8rem auto 0;max-width:34rem}
+.series{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+        color:var(--muted);margin:1.3rem 0 0}
+.series b{color:var(--ink);font-weight:500}
+
+/* ---- contents ---- */
+nav.contents{margin:2.8rem auto 0;max-width:28rem}
+h2.contents-title{font:700 .95rem/1 var(--display);letter-spacing:.22em;text-transform:uppercase;
+                  text-align:center;margin:0 0 1.1rem}
+nav.contents ol{list-style:none;margin:0;padding:0;counter-reset:sec}
+nav.contents li{counter-increment:sec}
+nav.contents a{display:flex;align-items:baseline;gap:.55em;text-decoration:none;
+               color:var(--ink);font:400 1.05rem/2.1 var(--body)}
+nav.contents a:hover .t,nav.contents a:focus-visible .t{color:var(--stamp);text-decoration:underline;
+               text-decoration-thickness:1px;text-underline-offset:2px}
+nav.contents .dots{flex:1;border-bottom:2px dotted var(--rule-faint);transform:translateY(-.4em)}
+nav.contents .n::before{content:counter(sec);font-family:var(--mono);font-size:.82rem;color:var(--muted)}
+
+/* ---- tools ---- */
+dl{margin:.8rem 0}
+dt{font-family:var(--mono);font-size:.85rem;font-weight:500;color:var(--stamp);margin-top:.75rem}
+dd{margin:0 0 0 0;padding-left:1.4rem;border-left:1px solid var(--rule-faint)}
+
+/* ---- tables ---- */
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;margin:.8rem 0}
+th,td{padding:.45rem .2rem;text-align:left;border-bottom:1px solid var(--rule-faint)}
+thead th{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+         font-weight:500;color:var(--muted);border-bottom:1px solid var(--rule)}
+td.num,th.num{text-align:right;font-family:var(--mono);font-size:.88rem}
+
+.pending{font-family:var(--mono);font-size:.8rem;color:var(--muted);
+         border:1px dashed var(--rule-faint);padding:.1rem .45rem;white-space:nowrap}
+footer{margin-top:3.2rem}
+footer p{font-size:.9rem;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <hr class="rule2">
+  <div class="inner">
+    <h1 class="masthead">Ask the Archives</h1>
+    <p class="sub">Open, machine-transcribed data archives,<br>searchable by any MCP client.</p>
+    <p class="series">Public-domain collections · <b>transcriptions released CC0</b></p>
+  </div>
+  <hr class="rule1">
+</header>
+
+<nav class="contents" aria-label="Contents">
+  <h2 class="contents-title">Contents</h2>
+  <ol>
+    <li><a href="#about"><span class="t">What this is</span><span class="dots"></span><span class="n"></span></a></li>
+    <li><a href="#collections"><span class="t">The collections</span><span class="dots"></span><span class="n"></span></a></li>
+    <li><a href="#connect"><span class="t">How to connect</span><span class="dots"></span><span class="n"></span></a></li>
+    <li><a href="#tools"><span class="t">Tools</span><span class="dots"></span><span class="n"></span></a></li>
+    <li><a href="#accuracy"><span class="t">Measured accuracy</span><span class="dots"></span><span class="n"></span></a></li>
+    <li><a href="#citation"><span class="t">Citation policy</span><span class="dots"></span><span class="n"></span></a></li>
+    <li><a href="#bulk"><span class="t">Bulk download</span><span class="dots"></span><span class="n"></span></a></li>
+  </ol>
+</nav>
+
+<section id="about">
+  <h2>What this is</h2>
+  <p>The great public-domain document collections, a century of government research
+  reports, archival records, and technical series, survive mostly as scans: photographs of
+  pages, invisible to search and to the language models researchers now work with.</p>
+  <p>Ask the Archives transcribes these collections page by page with vision models, tags
+  every page with its source engine and measured quality, and serves them through one
+  public <a href="https://modelcontextprotocol.io">MCP</a> endpoint: hybrid
+  keyword-and-semantic search over section-aware chunks, full page text with provenance,
+  figure records, page images, and ready-made citations. Every result carries its
+  collection, so one connection searches everything.</p>
+</section>
+
+<section id="collections">
+  <h2>The collections</h2>
+  <table>
+    <thead><tr><th>Collection</th><th>Span</th><th class="num">Size</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><a href="https://ntrs.nasa.gov">NACA Technical Reports</a> (NASA NTRS)</td>
+        <td>1915–1958</td>
+        <td class="num"><span data-stat="naca:reports">500</span> reports · <span data-stat="naca:pages">10,435</span> pages</td>
+        <td>Live</td>
+      </tr>
+      <tr>
+        <td><a href="https://registry.opendata.aws/nara-national-archives-catalog/">U.S. National Archives Catalog</a> (NARA)</td>
+        <td></td>
+        <td class="num"></td>
+        <td>In preparation · link-only: images are served by NARA</td>
+      </tr>
+    </tbody>
+  </table>
+  <p><em>Final counts land with each collection's first data release; the endpoint reports
+  live counts when you connect.</em></p>
+</section>
+
+<section id="connect">
+  <h2>How to connect</h2>
+  <p>Claude Code or Claude Desktop:</p>
+  <pre><code>claude mcp add --transport http archives https://mcp.askthearchives.org/mcp</code></pre>
+  <p>Any other MCP client:</p>
+  <pre><code>{
+  "mcpServers": {
+    "archives": {
+      "type": "http",
+      "url": "https://mcp.askthearchives.org/mcp"
+    }
+  }
+}</code></pre>
+  <p>No account, no key. The endpoint is rate-limited per connection and reports its own
+  live corpus counts in the server instructions.</p>
+</section>
+
+<section id="tools">
+  <h2>Tools</h2>
+  <dl>
+    <dt>search</dt><dd>Hybrid, keyword or semantic search over the corpus; hits carry document, page span, section heading, snippet, score, source engine and quality tag.</dd>
+    <dt>get_page</dt><dd>Full text of one page with provenance (engine, quality, config hash) and a ready-made citation.</dd>
+    <dt>get_report</dt><dd>Document metadata, a link to the source archive's record, and page availability by quality.</dd>
+    <dt>get_figures</dt><dd>Structured figure records (charts, drawings, photographs) for a document or a single page; <code>verified: false</code> means machine-drafted.</dd>
+    <dt>get_page_image</dt><dd>The scanned page itself (PNG), optionally cropped to a bounding box.</dd>
+    <dt>cite</dt><dd>Formatted citation with stable identifiers and the source archive's URL.</dd>
+  </dl>
+</section>
+
+<section id="accuracy">
+  <h2>Measured accuracy</h2>
+  <p>Transcription quality is measured, not asserted: every collection ships with its own
+  benchmarks against held-out human ground truth. For the NACA collection, character error
+  rate (lower is better):</p>
+  <table>
+    <thead><tr><th>Engine</th><th class="num">Median CER</th></tr></thead>
+    <tbody>
+      <tr><td>Campaign engine (8B vision model, fine-tuned)</td><td class="num">0.0940</td></tr>
+      <tr><td>27B escalation lane</td><td class="num">0.0975</td></tr>
+    </tbody>
+  </table>
+  <p>Retrieval is benchmarked too: hybrid search finds the right document in its top five
+  results for 76% of held-out research questions, against 54% for whole-page embedding
+  search. The full engine comparison lives in
+  <a href="https://github.com/Chris-P-Bakin/askthearchives/blob/main/BENCHMARKS.md">BENCHMARKS.md</a>.</p>
+  <p><strong>Caveat on tables.</strong> Agreement between engines can miss wrong digits inside
+  numeric tables; flagged pages go through an escalation and verification lane. Treat table
+  digits as less certain than prose, and check the page image for anything load-bearing.</p>
+</section>
+
+<section id="citation">
+  <h2>Citation policy</h2>
+  <p>Use the <code>cite</code> tool rather than composing citations by hand. Spans a
+  transcriber could not read are marked <code>&lt;?&gt;</code> in the text; they are
+  illegible in the original scan and must not be guessed or filled in. For hosted
+  collections (NACA), the page images served by this archive are the citable original.
+  For link-only collections (NARA), page images are not served; the source archive's
+  catalog record, linked by <code>cite</code>, is the citable original.</p>
+</section>
+
+<section id="bulk">
+  <h2>Bulk download</h2>
+  <p>Each collection's data releases include page images (hosted collections), transcriptions
+  in every quality layer, figure records, errata, and the search index. Link-only collections
+  (NARA) ship transcriptions and derived data only. Derived data is CC0.
+  NACA batch 0 can be browsed directly:
+  <a href="https://data.askthearchives.org/naca/publish/batch_000/manifest.jsonl">data.askthearchives.org/naca/publish/</a>.</p>
+</section>
+
+<footer>
+  <hr class="rule1">
+  <p>Transcriptions and all derived data are released
+  <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>. NACA originals are
+  public-domain works and their images are hosted here; NARA records are public-domain U.S.
+  government records whose images remain with the National Archives and are linked, not
+  hosted. Each collection names its source above. Pipeline, benchmarks, issues
+  and questions: <a href="https://github.com/Chris-P-Bakin/askthearchives">github.com/Chris-P-Bakin/askthearchives</a>.</p>
+</footer>
+</main>
+<script>
+(function () {
+  fetch("https://mcp.askthearchives.org/stats").then(function (r) {
+    if (!r.ok) { throw new Error("stats unavailable"); }
+    return r.json();
+  }).then(function (d) {
+    (d.collections || []).forEach(function (c) {
+      [["reports", c.reports], ["pages", c.pages]].forEach(function (kv) {
+        var el = document.querySelector('[data-stat="' + c.id + ":" + kv[0] + '"]');
+        if (el && typeof kv[1] === "number") {
+          el.textContent = kv[1].toLocaleString("en-US");
+          el.classList.remove("pending");
+        }
+      });
+    });
+  }).catch(function () { /* static launch numbers remain */ });
+})();
+</script>
+</body>
+</html>

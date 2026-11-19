@@ -1,0 +1,31 @@
+#!/bin/bash
+# BOINC anonymous-platform app "naca_vision": one workunit = one page.
+# Runs in the BOINC slot dir with unit.json + page.png (real copies, <copy_file/>).
+# Outputs go to result.txt / result.meta.json (links to the project-dir files):
+# the worker writes into a temp dir (its atomic os.replace would clobber the links)
+# and we copy THROUGH the links.
+export NACA_VLM_URL="${NACA_VLM_URL:-http://127.0.0.1:8080}"
+OUT="$(mktemp -d)"
+trap 'rm -rf "$OUT"' EXIT
+python3 /worker/unit_worker.py unit.json page.png "$OUT"
+rc=$?
+if [ $rc -ne 0 ]; then
+  echo "naca_vision: worker failed rc=$rc: $(cat "$OUT/result.meta.json" 2>/dev/null)" >&2
+  exit 1      # non-zero => BOINC compute error => server reissues the workunit
+fi
+# The client pre-creates result.txt / result.meta.json in the slot dir as BOINC soft-link
+# files (<soft_link>/abs/path</soft_link>); the real output path is inside. Resolve, then write.
+resolve() {
+  if grep -q '<soft_link>' "$1" 2>/dev/null; then
+    sed -n 's#.*<soft_link>\(.*\)</soft_link>.*#\1#p' "$1" | head -1
+  else
+    echo "$1"
+  fi
+}
+RT="$(resolve result.txt)"; RM="$(resolve result.meta.json)"
+cat "$OUT/result.txt" > "$RT" || exit 1
+cat "$OUT/result.meta.json" > "$RM" || exit 1
+# Not linked against the BOINC API, so write the "finished" marker boinc_finish() would
+# (status 0). Without it the client logs "exited with zero status but no 'finished'
+# file" and re-runs the task.
+printf '0\n\n' > boinc_finish_called

@@ -1,0 +1,14 @@
+[Unit]
+Description=Campaign ingest downloader (NTRS pass1, batches 2-30)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/data_normalizing
+ExecStart=/bin/bash %h/data_normalizing/pipeline/campaign_download.sh
+Restart=on-failure
+RestartSec=120
+
+[Install]
+WantedBy=default.target

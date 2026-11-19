@@ -1,0 +1,20 @@
+<app_info>
+    <app>
+        <name>naca_vision</name>
+    </app>
+    <file_info>
+        <name>naca_vision_1.00_x86_64-pc-linux-gnu</name>
+        <executable/>
+    </file_info>
+    <app_version>
+        <app_name>naca_vision</app_name>
+        <version_num>100</version_num>
+        <platform>x86_64-pc-linux-gnu</platform>
+        <avg_ncpus>1</avg_ncpus>
+        <max_ncpus>1</max_ncpus>
+        <file_ref>
+            <file_name>naca_vision_1.00_x86_64-pc-linux-gnu</file_name>
+            <main_program/>
+        </file_ref>
+    </app_version>
+</app_info>

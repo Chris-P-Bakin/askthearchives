@@ -1,0 +1,14 @@
+{
+  "llama_server_image": {
+    "image": "ghcr.io/ggml-org/llama.cpp:server-cuda",
+    "digest": "sha256:4b554057c7cf0cb87e0724b6de9d7ca9bb24a3b72716af11e4c0fecad62c506b"
+  },
+  "embed_model": {
+    "path": "data/models/qwen3-embed-0.6b/Qwen3-Embedding-0.6B-Q8_0.gguf",
+    "sha256": "06507c7b42688469c4e7298b0a1e16deff06caf291cf0a5b278c308249c3e439"
+  },
+  "qdrant_image": {
+    "tag": "v1.20.2",
+    "digest": "sha256:d277592721d2e3b73f9b797b53cf05e6a5bb2134f6d13fdbda4ca51782afbcac"
+  }
+}

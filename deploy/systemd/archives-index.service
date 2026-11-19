@@ -1,0 +1,9 @@
+[Unit]
+Description=Ask the Archives staged index refresh
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/data_normalizing
+Environment=ARCHIVES_EMBED_URL=http://127.0.0.1:8201
+Environment=ARCHIVES_QDRANT_URL=http://127.0.0.1:6333
+ExecStart=%h/data_normalizing/.venv/bin/python pipeline/index_refresh.py --no-embed --restart-unit archives-mcp

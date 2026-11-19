@@ -1,0 +1,8 @@
+<job_desc>
+    <task>
+        <application>python/python.exe</application>
+        <command_line>launcher.py .</command_line>
+        <stdout_filename>launcher_stdout.txt</stdout_filename>
+        <weight>1</weight>
+    </task>
+</job_desc>

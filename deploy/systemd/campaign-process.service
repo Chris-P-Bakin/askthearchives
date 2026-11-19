@@ -1,0 +1,14 @@
+[Unit]
+Description=Campaign processor (tesseract/layout sweeps, workgen, GPU-split submit)
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/data_normalizing
+ExecStart=/bin/bash %h/data_normalizing/pipeline/campaign_process.sh
+Restart=on-failure
+RestartSec=120
+
+[Install]
+WantedBy=default.target

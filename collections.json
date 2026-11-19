@@ -1,0 +1,25 @@
+[
+  {
+    "id": "naca",
+    "title": "NACA technical reports",
+    "source": "NASA Technical Reports Server",
+    "record_url": "https://ntrs.nasa.gov/citations/{id}",
+    "citation": "hosted-original",
+    "doc_prefix": "",
+    "root": "data",
+    "status": "transcribed",
+    "label": "NTRS",
+    "doc_label_prefix": "NACA"
+  },
+  {
+    "id": "nara-rg255",
+    "title": "NASA records, RG 255",
+    "source": "National Archives (NARA)",
+    "record_url": "https://catalog.archives.gov/id/{id}",
+    "citation": "link-only",
+    "doc_prefix": "nara255-",
+    "root": "data/collections/nara-rg255",
+    "status": "digitized",
+    "label": "NARA"
+  }
+]

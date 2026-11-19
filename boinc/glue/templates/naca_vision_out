@@ -1,0 +1,26 @@
+<output_template>
+    <file_info>
+        <name><OUTFILE_0/></name>
+        <generated_locally/>
+        <upload_when_present/>
+        <max_nbytes>2000000</max_nbytes>
+        <url><UPLOAD_URL/></url>
+    </file_info>
+    <file_info>
+        <name><OUTFILE_1/></name>
+        <generated_locally/>
+        <upload_when_present/>
+        <max_nbytes>200000</max_nbytes>
+        <url><UPLOAD_URL/></url>
+    </file_info>
+    <result>
+        <file_ref>
+            <file_name><OUTFILE_0/></file_name>
+            <open_name>result.txt</open_name>
+        </file_ref>
+        <file_ref>
+            <file_name><OUTFILE_1/></file_name>
+            <open_name>result.meta.json</open_name>
+        </file_ref>
+    </result>
+</output_template>
