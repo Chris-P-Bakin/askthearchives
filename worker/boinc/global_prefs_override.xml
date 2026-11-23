@@ -1,0 +1,12 @@
+<global_preferences>
+    <suspend_cpu_usage>0</suspend_cpu_usage>
+    <run_on_batteries>1</run_on_batteries>
+    <run_if_user_active>1</run_if_user_active>
+    <run_gpu_if_user_active>1</run_gpu_if_user_active>
+    <idle_time_to_run>0</idle_time_to_run>
+    <max_ncpus_pct>100</max_ncpus_pct>
+    <cpu_usage_limit>100</cpu_usage_limit>
+    <work_buf_min_days>0.01</work_buf_min_days>
+    <work_buf_additional_days>0</work_buf_additional_days>
+    <disk_max_used_pct>90</disk_max_used_pct>
+</global_preferences>

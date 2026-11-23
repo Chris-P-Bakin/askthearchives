@@ -1,0 +1,292 @@
+{
+  "uid": "archives-campaign",
+  "title": "Archives campaign",
+  "tags": [
+    "archives"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "1m",
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "editable": true,
+  "panels": [
+    {
+      "id": 1,
+      "title": "BOINC workunit states",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "archives-ch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "archives-ch"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "timeseries",
+          "rawSql": "SELECT toStartOfInterval(ts, INTERVAL 5 MINUTE) AS time, name AS metric, max(value) AS value FROM archives.samples WHERE $__timeFilter(ts) AND name IN ('naca_wus_total','naca_wus_valid','naca_wus_invalid','naca_wus_inflight','naca_pages_assimilated') GROUP BY time, metric ORDER BY time"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Escalation lanes pending",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "archives-ch"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "archives-ch"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "timeseries",
+          "rawSql": "SELECT toStartOfInterval(ts, INTERVAL 5 MINUTE) AS time, labels['lane'] AS metric, max(value) AS value FROM archives.samples WHERE $__timeFilter(ts) AND name = 'naca_queue_pending' GROUP BY time, metric ORDER BY time"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "235B spend (USD, latest)",
+      "type": "stat",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "archives-ch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 6,
+        "h": 6
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "archives-ch"
+          },
+          "editorType": "sql",
+          "format": 0,
+          "queryType": "table",
+          "rawSql": "SELECT argMax(value, ts) AS spend_usd FROM archives.samples WHERE $__timeFilter(ts) AND name = 'naca_235b_spend_usd'"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Pages per layer",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "archives-ch"
+      },
+      "gridPos": {
+        "x": 6,
+        "y": 8,
+        "w": 18,
+        "h": 6
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "archives-ch"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "timeseries",
+          "rawSql": "SELECT toStartOfInterval(ts, INTERVAL 5 MINUTE) AS time, labels['layer'] AS metric, max(value) AS value FROM archives.samples WHERE $__timeFilter(ts) AND name = 'naca_pages_meta' GROUP BY time, metric ORDER BY time"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "GPU memory (MB)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "archives-ch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 14,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "archives-ch"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "timeseries",
+          "rawSql": "SELECT toStartOfInterval(ts, INTERVAL 5 MINUTE) AS time, labels['kind'] AS metric, max(value) AS value FROM archives.samples WHERE $__timeFilter(ts) AND name = 'naca_gpu_mem_mb' GROUP BY time, metric ORDER BY time"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Ingest MB/day",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "archives-ch"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 14,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "decmbytes"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "archives-ch"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "timeseries",
+          "rawSql": "SELECT time, metric, sum(d) AS value FROM (SELECT time, metric, greatest(0, v - lagInFrame(v, 1, v) OVER (PARTITION BY metric, series ORDER BY time ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)) * 1 AS d FROM (SELECT toStartOfInterval(ts, INTERVAL 1 DAY) AS time, '' AS metric, toString(labels) AS series, max(value) AS v FROM archives.samples WHERE $__timeFilter(ts) AND name = 'naca_ingest_downloaded_mb_total' GROUP BY time, metric, series)) GROUP BY time, metric ORDER BY time"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Pages/day by layer (naca_pages_meta increase)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "archives-ch"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 22,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "archives-ch"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "timeseries",
+          "rawSql": "SELECT time, metric, sum(d) AS value FROM (SELECT time, metric, greatest(0, v - lagInFrame(v, 1, v) OVER (PARTITION BY metric, series ORDER BY time ROWS BETWEEN 1 PRECEDING AND CURRENT ROW)) * 1 AS d FROM (SELECT toStartOfInterval(ts, INTERVAL 1 DAY) AS time, labels['layer'] AS metric, toString(labels) AS series, max(value) AS v FROM archives.samples WHERE $__timeFilter(ts) AND name = 'naca_pages_meta' GROUP BY time, metric, series)) GROUP BY time, metric ORDER BY time"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Collector errors by source",
+      "type": "timeseries",
+      "datasource": {
+        "type": "grafana-clickhouse-datasource",
+        "uid": "archives-ch"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 22,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-clickhouse-datasource",
+            "uid": "archives-ch"
+          },
+          "editorType": "sql",
+          "format": 1,
+          "queryType": "timeseries",
+          "rawSql": "SELECT toStartOfInterval(ts, INTERVAL 5 MINUTE) AS time, labels['source'] AS metric, max(value) AS value FROM archives.samples WHERE $__timeFilter(ts) AND name = 'naca_collector_errors' GROUP BY time, metric ORDER BY time"
+        }
+      ]
+    }
+  ],
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  }
+}

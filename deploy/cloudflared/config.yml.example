@@ -1,0 +1,15 @@
+# cloudflared tunnel config for the public NACA MCP endpoint.
+# Copy to deploy/secrets-local/config.yml and fill the placeholders.
+# Credentials (the tunnel JSON) live in deploy/secrets-local/, which is
+# gitignored. Never commit them.
+#
+# NACA_DOMAIN is the real registered domain. cloudflared does NOT expand
+# variables: replace REPLACE-ME-NACA_DOMAIN by hand. A leftover placeholder
+# silently routes every request to the 404 catch-all.
+tunnel: REPLACE-ME-TUNNEL_UUID
+credentials-file: /home/REPLACE-ME-USER/data_normalizing/deploy/secrets-local/REPLACE-ME-TUNNEL_UUID.json
+
+ingress:
+  - hostname: mcp.REPLACE-ME-NACA_DOMAIN
+    service: http://127.0.0.1:8800
+  - service: http_status:404

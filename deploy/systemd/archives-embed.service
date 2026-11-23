@@ -1,0 +1,15 @@
+[Unit]
+Description=Ask the Archives embedding server (llama.cpp, CPU, loopback only)
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStartPre=-docker rm -f archives-embed
+ExecStart=docker run --rm --name archives-embed --gpus all -p 127.0.0.1:8201:8201 -v %h/data_normalizing/data/models/qwen3-embed-0.6b:/models:ro ghcr.io/ggml-org/llama.cpp:server-cuda@sha256:4b554057c7cf0cb87e0724b6de9d7ca9bb24a3b72716af11e4c0fecad62c506b -m /models/Qwen3-Embedding-0.6B-Q8_0.gguf --embedding --pooling last -ngl 999 -c 8192 --parallel 4 -b 2048 -ub 2048 --host 0.0.0.0 --port 8201
+ExecStop=docker stop archives-embed
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

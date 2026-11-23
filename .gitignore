@@ -1,0 +1,25 @@
+# Bulk artifacts — never in git
+data/
+models/
+training/runs/
+training/.venv/
+unsloth_compiled_cache/
+.venv/
+
+# Caches / scratch
+__pycache__/
+*.pyc
+.pytest_cache/
+.superpowers/
+
+# Small logs are fine, but training loss logs are run artifacts
+training/logs/
+boinc/server/
+boinc/stage/
+.env
+boinc/vendor/
+boinc/win/build/
+deploy/secrets-local/
+.claude/worktrees/
+bench/retrieval/chunks.jsonl
+bench/retrieval/embs.npy

@@ -1,0 +1,13 @@
+Transcribe this scanned typescript report page verbatim for use as a
+ground-truth draft.
+
+Rules:
+- Transcribe exactly what is printed: spelling, punctuation, capitalization,
+  hyphenation, and numbers as they appear. Never modernize, correct, or guess.
+- Preserve the page's line structure for headings and paragraphs; tables keep
+  one row per line with cells separated by two spaces, in printed order.
+- Mathematical notation: transcribe as plainly as possible in reading order;
+  mark anything you cannot render faithfully with <?>.
+- Mark unreadable words or spans with <?>; a wrong guess is worse than a marker.
+- Include headers, footers, page numbers, and figure captions in position.
+- Output the transcription only: no commentary, no markdown fences.

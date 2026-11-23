@@ -1,0 +1,15 @@
+Transcribe this newspaper page verbatim for use as a ground-truth draft.
+
+Rules:
+- Transcribe exactly what is printed: spelling, punctuation, capitalization,
+  and numbers as they appear. Never modernize, correct, or guess.
+- Follow reading order: complete each column top to bottom before the next,
+  left to right. Headlines and subheads precede their article text.
+- Keep one blank line between articles and between headline blocks and body.
+- Mark text you cannot read with <?> (one marker per illegible word or span).
+  Use it honestly; a wrong guess is worse than a marker.
+- Include mastheads, page headers, datelines, bylines, captions, and
+  advertisements, each in reading-order position.
+- Tables and market quotations: one row per line, cells separated by two
+  spaces, left to right exactly as printed.
+- Output the transcription only: no commentary, no markdown fences.

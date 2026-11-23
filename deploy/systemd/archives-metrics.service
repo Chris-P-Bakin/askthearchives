@@ -1,0 +1,14 @@
+[Unit]
+Description=Ship Archives request events to ClickHouse (observability collector)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/data_normalizing
+EnvironmentFile=%h/data_normalizing/deploy/secrets-local/clickhouse.env
+ExecStart=%h/data_normalizing/.venv/bin/python %h/data_normalizing/pipeline/obs_ship.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target

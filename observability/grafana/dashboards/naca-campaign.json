@@ -1,0 +1,236 @@
+{
+ "uid": "naca-campaign",
+ "title": "NACA campaign",
+ "schemaVersion": 39,
+ "version": 1,
+ "refresh": "30s",
+ "time": {
+  "from": "now-6h",
+  "to": "now"
+ },
+ "panels": [
+  {
+   "id": 1,
+   "type": "timeseries",
+   "title": "WU valid / invalid",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "naca-prom"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "naca_wus_valid",
+     "legendFormat": "valid",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "naca-prom"
+     }
+    },
+    {
+     "refId": "B",
+     "expr": "naca_wus_invalid",
+     "legendFormat": "invalid",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "naca-prom"
+     }
+    },
+    {
+     "refId": "C",
+     "expr": "naca_wus_inflight",
+     "legendFormat": "in flight",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "naca-prom"
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {},
+    "overrides": []
+   }
+  },
+  {
+   "id": 2,
+   "type": "timeseries",
+   "title": "Pages assimilated",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "naca-prom"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 0,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "naca_pages_assimilated",
+     "legendFormat": "assimilated WUs",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "naca-prom"
+     }
+    },
+    {
+     "refId": "B",
+     "expr": "naca_pages_meta{layer=\"vision_8blora_v2_1\"}",
+     "legendFormat": "campaign meta files",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "naca-prom"
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {},
+    "overrides": []
+   }
+  },
+  {
+   "id": 3,
+   "type": "timeseries",
+   "title": "Queue depth by lane",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "naca-prom"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 8,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "naca_queue_pending",
+     "legendFormat": "{{lane}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "naca-prom"
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {},
+    "overrides": []
+   }
+  },
+  {
+   "id": 4,
+   "type": "timeseries",
+   "title": "235B cumulative spend",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "naca-prom"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 8,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "naca_235b_spend_usd",
+     "legendFormat": "spend",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "naca-prom"
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "currencyUSD"
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 5,
+   "type": "timeseries",
+   "title": "GPU memory",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "naca-prom"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 16,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "naca_gpu_mem_mb{kind=\"used\"}",
+     "legendFormat": "used",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "naca-prom"
+     }
+    },
+    {
+     "refId": "B",
+     "expr": "naca_gpu_mem_mb{kind=\"total\"}",
+     "legendFormat": "total",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "naca-prom"
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "decmbytes"
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 6,
+   "type": "timeseries",
+   "title": "Exporter errors",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "naca-prom"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 16,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum by (source) (naca_exporter_errors)",
+     "legendFormat": "{{source}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "naca-prom"
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {},
+    "overrides": []
+   }
+  }
+ ],
+ "tags": [
+  "naca"
+ ]
+}

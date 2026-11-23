@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+"""script_validator init_script for the batched app: naca_validate_b <results.jsonl> <batch.meta.json>.
+Same contract as naca_validate; the manifest is looked up in the download hierarchy
+by the workunit name derived from the output file name (naca_b_*)."""
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+import naca_hooklib as h
+
+if len(sys.argv) != 3:
+    print("usage: naca_validate_b <results.jsonl> <batch.meta.json>", file=sys.stderr)
+    sys.exit(h.VAL_RESULT_TRANSIENT_ERROR)
+try:
+    wu = h.wu_name_from_output_path(sys.argv[1])
+    rc = h.run_batch_cli("batch_validate.py", wu, sys.argv[1], sys.argv[2])
+except Exception as e:
+    print(f"naca_validate_b infra error: {e!r}", file=sys.stderr)
+    sys.exit(h.VAL_RESULT_TRANSIENT_ERROR)
+sys.exit(rc if rc in (0, 1) else h.VAL_RESULT_TRANSIENT_ERROR)

@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+"""script_assimilator: naca_assimilate <wu_id> <result.txt> <result.meta.json>
+(BOINC default tokens for a bare `--script naca_assimilate`: wu_id files). The unit id is
+derived from the output file name. On a failed workunit BOINC calls it as
+`naca_assimilate --error N wu_name wu_id batch_id`; that is logged and recorded as a wu_error row in escalation_queue.jsonl."""
+import os, sys
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)))
+import naca_hooklib as h
+
+if len(sys.argv) > 1 and sys.argv[1] == "--error":
+    print(f"naca_assimilate: workunit failed: {' '.join(sys.argv[2:])}", file=sys.stderr)
+    try:
+        h.record_wu_error(sys.argv[1:])
+    except Exception as e:   # never wedge the assimilator on a failed-WU bookkeeping error
+        print(f"naca_assimilate: could not record wu_error: {e!r}", file=sys.stderr)
+    sys.exit(0)
+if len(sys.argv) != 4:
+    print("usage: naca_assimilate <wu_name> <result.txt> <result.meta.json>", file=sys.stderr)
+    sys.exit(1)
+_, txt, meta = sys.argv[1:]
+uid = h.unit_id_from_output_path(txt)
+sys.exit(h.run_cli("unit_assimilate.py", uid, txt, meta, ("--data-root", h.DATA_ROOT)))

@@ -1,0 +1,338 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Document Pipeline</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#e9eae2; --panel:#f0f1ea; --ink:#22313a; --pencil:#75848d;
+  --rule:rgba(34,49,58,.30); --rule-soft:rgba(34,49,58,.12);
+  --active:#b36f14; --good:#2e6b4f; --fault:#a33327;
+  --grid:rgba(34,49,58,.045);
+}
+@media (prefers-color-scheme:dark){:root{
+  --paper:#10263a; --panel:#152f47; --ink:#d9e4e9; --pencil:#7f99ab;
+  --rule:rgba(217,228,233,.35); --rule-soft:rgba(217,228,233,.14);
+  --active:#e2a53c; --good:#6cb890; --fault:#e07b65;
+  --grid:rgba(217,228,233,.05);
+}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font:15px/1.5 Barlow,system-ui,sans-serif;
+  background-image:
+    repeating-linear-gradient(0deg,var(--grid) 0 1px,transparent 1px 24px),
+    repeating-linear-gradient(90deg,var(--grid) 0 1px,transparent 1px 24px);}
+.sheet{max-width:1080px;margin:0 auto;padding:0 16px 56px}
+h1,h2,.tb,.lbl{font-family:"Barlow Semi Condensed",Barlow,sans-serif}
+.num,td.num,.meter b,.big{font-variant-numeric:tabular-nums}
+
+/* title block */
+.tblock{display:flex;flex-wrap:wrap;border:1.5px solid var(--rule);border-top:0;
+  background:var(--panel);margin-bottom:26px}
+.tb{padding:8px 14px;border-right:1px solid var(--rule);font-size:12px;
+  letter-spacing:.04em;color:var(--pencil)}
+.tb b{display:block;font-size:15px;font-weight:600;letter-spacing:.06em;color:var(--ink)}
+.tb.name{flex:1;min-width:220px}
+.tb.name b{font-size:19px;text-transform:uppercase}
+.tb:last-child{border-right:0}
+.tb a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+
+h2{font-size:15px;font-weight:600;letter-spacing:.05em;margin:30px 0 10px;
+  display:flex;align-items:baseline;gap:10px}
+h2::after{content:"";flex:1;border-bottom:1px solid var(--rule-soft);transform:translateY(-4px)}
+
+/* schematic */
+.schewrap{overflow-x:auto;border:1.5px solid var(--rule);background:var(--panel)}
+svg.schem{display:block;min-width:860px;width:100%;height:auto}
+.st rect,.st path.d{fill:var(--panel);stroke:var(--ink);stroke-width:1.4}
+.st text{fill:var(--ink);font:600 12.5px "Barlow Semi Condensed",sans-serif;letter-spacing:.03em}
+.st text.cnt{fill:var(--pencil);font:500 11px Barlow,sans-serif;letter-spacing:0}
+.st .lamp{fill:none;stroke:var(--pencil);stroke-width:1.2}
+.st.on rect,.st.on path.d{stroke:var(--active);stroke-width:2.2}
+.st.on .lamp{fill:var(--active);stroke:var(--active);animation:lamp 1.6s ease-in-out infinite}
+.st.on text:not(.cnt){fill:var(--active)}
+.wire{stroke:var(--pencil);stroke-width:1.2;fill:none;marker-end:url(#arr)}
+.wlbl{fill:var(--pencil);font:500 10.5px Barlow,sans-serif}
+@keyframes lamp{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.st.on .lamp{animation:none}}
+
+/* panels */
+.row{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--rule);
+  background:var(--panel)}
+.panel{padding:14px 16px 16px;min-width:0}
+.panel+.panel{border-left:1px solid var(--rule)}
+@media (max-width:760px){.row{grid-template-columns:1fr}
+  .panel+.panel{border-left:0;border-top:1px solid var(--rule)}}
+.lbl{font-size:12px;letter-spacing:.05em;color:var(--pencil);margin-bottom:6px}
+.big{font-size:30px;font-weight:600;font-family:"Barlow Semi Condensed",sans-serif;line-height:1.1}
+.big small{font-size:14px;color:var(--pencil);font-weight:500;font-family:Barlow}
+.statline{font-size:13px;color:var(--pencil);margin-top:2px}
+.statline b{color:var(--ink);font-weight:500}
+.runlamp{display:inline-block;width:9px;height:9px;border-radius:50%;
+  border:1.2px solid var(--pencil);vertical-align:-1px;margin-right:6px}
+.runlamp.on{background:var(--active);border-color:var(--active);animation:lamp 1.6s infinite}
+.runlamp.ok{background:var(--good);border-color:var(--good)}
+
+/* loss sparkline */
+.spark{width:100%;height:84px;display:block;margin-top:10px}
+.spark polyline{fill:none;stroke:var(--ink);stroke-width:1.6}
+.spark .evalpt{fill:var(--good)}
+.spark .axis{stroke:var(--rule-soft);stroke-width:1}
+.spark text{fill:var(--pencil);font:10.5px Barlow,sans-serif}
+.spark .cursor{stroke:var(--active);stroke-width:1;display:none}
+.spark .curlab{fill:var(--ink);font:500 11px Barlow,sans-serif;display:none}
+
+/* tier bar */
+.tierbar{display:flex;height:22px;margin:10px 0 8px;gap:2px}
+.tierbar i{display:block;background:var(--ink)}
+.tierrows{font-size:13px}
+.tierrows div{display:flex;justify-content:space-between;gap:10px;padding:1.5px 0}
+.tierrows .sw{display:inline-block;width:10px;height:10px;margin-right:7px;background:var(--ink)}
+.tierrows span{color:var(--pencil)}
+.tierrows b{font-weight:500}
+
+/* meters */
+.meters{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  border:1.5px solid var(--rule);background:var(--panel)}
+.meter{padding:12px 16px;border-right:1px solid var(--rule-soft)}
+.meter:last-child{border-right:0}
+.meter .lbl{margin-bottom:2px}
+.meter b{font-size:17px;font-weight:600;font-family:"Barlow Semi Condensed",sans-serif}
+.meter small{color:var(--pencil);font-size:12px;margin-left:6px}
+.gauge{height:7px;border:1px solid var(--rule);margin-top:7px;position:relative}
+.gauge i{display:block;height:100%;background:var(--ink)}
+.gauge.hot i{background:var(--fault)}
+.hotlbl{color:var(--fault);font-weight:600}
+
+/* tables + log (restyled from v1) */
+table{border-collapse:collapse;width:100%;background:var(--panel);
+  border:1.5px solid var(--rule);font-size:13.5px}
+th{color:var(--pencil);font-weight:600;text-align:left;font-size:12px;
+  font-family:"Barlow Semi Condensed",sans-serif;letter-spacing:.04em}
+th,td{padding:5px 10px;border-bottom:1px solid var(--rule-soft);white-space:nowrap}
+tr:last-child td{border-bottom:0}.numcol{text-align:right}
+.wrap{overflow-x:auto}
+.chip{font-size:12px;font-weight:600}
+.s-done{color:var(--good)}.s-processing{color:var(--active)}
+.s-failed{color:var(--fault)}.s-missing{color:var(--fault)}.s-queued{color:var(--pencil)}
+.mini{display:inline-block;width:64px;height:7px;border:1px solid var(--rule-soft);
+  vertical-align:1px;margin-right:6px}
+.mini i{display:block;height:100%;background:var(--pencil)}
+pre{background:var(--panel);border:1.5px solid var(--rule);padding:10px 12px;
+  font-size:12px;overflow-x:auto;color:var(--pencil)}
+.note{font-size:12.5px;color:var(--pencil);margin-top:6px}
+</style></head><body><div class="sheet">
+
+<div class="tblock">
+  <div class="tb name"><b id="colname">Document Pipeline</b><span id="colsub"></span></div>
+  <div class="tb">sheet<b>Live status</b></div>
+  <div class="tb">rev<b id="rev">—</b></div>
+  <div class="tb">drawings<b><a href="/transcribe">transcription bench</a></b></div>
+</div>
+
+<div class="schewrap"><svg class="schem" viewBox="0 0 1000 252" role="img"
+  aria-label="Pipeline schematic: fetch, layout, OCR, gate, vision engines, agreement, reconcile, index, serve, and LoRA training">
+<defs><marker id="arr" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+  <path d="M0 0 L7 3.5 L0 7 z" fill="var(--pencil)"/></marker></defs>
+<!-- wires -->
+<path class="wire" d="M128 76 H146"/>
+<path class="wire" d="M252 76 H270"/>
+<path class="wire" d="M376 76 H398"/>
+<path class="wire" d="M486 76 C510 76 510 44 532 44"/>
+<path class="wire" d="M486 76 C510 76 510 120 532 120"/>
+<path class="wire" d="M656 44 C680 44 680 76 700 78"/>
+<path class="wire" d="M656 120 C680 120 680 84 700 82"/>
+<path class="wire" d="M806 80 H824"/>
+<path class="wire" d="M884 108 V128"/>
+<path class="wire" d="M753 108 C753 150 660 108 656 150"/>
+<text class="wlbl" x="500" y="32">escalated</text>
+<text class="wlbl" x="497" y="145">reference</text>
+<text class="wlbl" x="586" y="172">agreed labels</text>
+<!-- stations -->
+<g class="st" id="st-p1"><rect x="22" y="52" width="106" height="48"/>
+  <circle class="lamp" cx="34" cy="64" r="4"/>
+  <text x="44" y="69">1 · FETCH</text><text class="cnt" x="34" y="88" id="c-p1">rasterize + baseline</text></g>
+<g class="st" id="st-p2"><rect x="146" y="52" width="106" height="48"/>
+  <circle class="lamp" cx="158" cy="64" r="4"/>
+  <text x="168" y="69">2 · LAYOUT</text><text class="cnt" x="158" y="88">figure regions</text></g>
+<g class="st" id="st-p3"><rect x="270" y="52" width="106" height="48"/>
+  <circle class="lamp" cx="282" cy="64" r="4"/>
+  <text x="292" y="69">3 · OCR</text><text class="cnt" x="282" y="88">tesseract draft</text></g>
+<g class="st" id="st-gate"><path class="d" d="M442 50 L486 76 L442 102 L398 76 z"/>
+  <text x="442" y="73" text-anchor="middle">GATE</text>
+  <text class="cnt" x="442" y="89" text-anchor="middle" id="c-gate">61%↑</text></g>
+<g class="st" id="st-v27"><rect x="532" y="20" width="124" height="48"/>
+  <circle class="lamp" cx="544" cy="32" r="4"/>
+  <text x="554" y="37">4a · VLM 27B</text><text class="cnt" x="544" y="56" id="c-v27">—</text></g>
+<g class="st" id="st-haiku"><rect x="532" y="96" width="124" height="48"/>
+  <circle class="lamp" cx="544" cy="108" r="4"/>
+  <text x="554" y="113">4b · HAIKU API</text><text class="cnt" x="544" y="132" id="c-haiku">—</text></g>
+<g class="st" id="st-agree"><rect x="700" y="56" width="106" height="48"/>
+  <circle class="lamp" cx="712" cy="68" r="4"/>
+  <text x="722" y="73">AGREEMENT</text><text class="cnt" x="712" y="92" id="c-agree">—</text></g>
+<g class="st" id="st-rec"><rect x="824" y="56" width="120" height="48"/>
+  <circle class="lamp" cx="836" cy="68" r="4"/>
+  <text x="846" y="73">5 · RECONCILE</text><text class="cnt" x="836" y="92" id="c-rec">—</text></g>
+<g class="st" id="st-index"><rect x="824" y="128" width="120" height="48"/>
+  <circle class="lamp" cx="836" cy="140" r="4"/>
+  <text x="846" y="145">6 · INDEX</text><text class="cnt" x="836" y="164" id="c-index">—</text></g>
+<g class="st" id="st-train"><rect x="532" y="150" width="124" height="48"/>
+  <circle class="lamp" cx="544" cy="162" r="4"/>
+  <text x="554" y="167">LORA 8B</text><text class="cnt" x="544" y="186" id="c-train">idle</text></g>
+<g class="st"><rect x="824" y="200" width="120" height="34" rx="17"/>
+  <text x="884" y="221" text-anchor="middle">MCP · SEARCH</text></g>
+<path class="wire" d="M884 176 V196"/>
+</svg></div>
+<div class="note">stations light amber while running · wires follow the data: pages fetched → gated → transcribed by both engines → agreed → reconciled → indexed → served; agreed labels feed the 8B student</div>
+
+<h2>Training</h2>
+<div class="row">
+  <div class="panel">
+    <div class="lbl"><span class="runlamp" id="trlamp"></span><span id="trname">run v1 · Qwen3-VL-8B QLoRA</span></div>
+    <div class="big" id="trstep">—</div>
+    <div class="statline" id="trmeta">no loss log yet</div>
+    <svg class="spark" id="spark" viewBox="0 0 440 84" preserveAspectRatio="none"></svg>
+  </div>
+  <div class="panel">
+    <div class="lbl">corpus register</div>
+    <div class="big" id="docs">—<small> documents</small></div>
+    <div class="statline" id="pages">—</div>
+    <div class="tierbar" id="tierbar"></div>
+    <div class="tierrows" id="tierrows"></div>
+  </div>
+</div>
+
+<h2>Machine</h2>
+<div class="meters" id="meters"></div>
+
+<h2>Reports</h2>
+<div class="statline" id="sub" style="margin-bottom:8px">loading…</div>
+<div class="wrap"><table id="tbl"></table></div>
+
+<h2>Pass performance</h2>
+<div class="wrap"><table id="ptbl"></table></div>
+<div class="note" id="pnote"></div>
+
+<h2>Recent log events</h2><pre id="log"></pre>
+</div><script>
+const $=id=>document.getElementById(id);
+const CHIP={done:"✓ done",processing:"⟳ processing",failed:"✗ failed",
+            missing:"⊘ no pdf",queued:"○ queued"};
+const TIERS=[["verified","verified (human)"],["vision_agreed","vision · engines agree"],
+  ["vision_minor","vision · minor diff"],["vision_single","vision · single engine"],
+  ["vision","vision · unpaired"],["vision_conflict","vision · conflict"],
+  ["vision_blank","blank page"],["ocr_draft","ocr draft (not escalated)"]];
+const TIER_ALPHA={verified:1,vision_agreed:.84,vision_minor:.68,vision_single:.56,
+  vision:.47,vision_conflict:.36,vision_blank:.24,ocr_draft:.14};
+
+async function live(){
+ let d; try{ d=await (await fetch("/api/live")).json(); }catch(e){ return; }
+ $("rev").textContent=d.system.generated;
+ if(d.collection){$("colname").textContent=d.collection.name;
+  $("colsub").textContent=d.collection.subtitle;
+  if(document.title!==d.collection.short)document.title=d.collection.short;}
+ // stations
+ const map={p1:"st-p1",p2:"st-p2",p3:"st-p3",v27:"st-v27",haiku:"st-haiku",
+   agree:"st-agree",rec:"st-rec",index:"st-index",train:"st-train"};
+ for(const k in map) $(map[k]).classList.toggle("on", !!d.stations[k]);
+ // training
+ const t=d.training;
+ $("trlamp").className="runlamp "+(t.alive?"on":(t.adapter_saved?"ok":""));
+ if(t.step>0||t.alive){
+  $("trstep").textContent=`step ${t.step} / ${t.total_steps||"?"}`;
+  $("trmeta").innerHTML=`loss <b>${t.loss==null?"—":(+t.loss).toFixed(4)}</b>`+
+   (t.eval_loss!=null?` · val <b>${(+t.eval_loss).toFixed(4)}</b>`:"")+
+   (t.epoch!=null?` · epoch <b>${(+t.epoch).toFixed(2)}</b>`:"")+
+   ` · checkpoints <b>${t.checkpoints}</b>`+
+   (t.alive?` · <b>${t.pct}%</b>`:(t.adapter_saved?" · adapter saved ✓":" · stopped"));
+  drawSpark(t.curve);
+ } else {
+  $("trstep").textContent="no active run";
+  $("trmeta").textContent=t.adapter_saved?"adapter v1 saved — awaiting export":"loss log empty";
+ }
+ // corpus
+ $("docs").innerHTML=`${d.docs}<small> documents</small>`;
+ $("pages").innerHTML=`<b>${d.pages}</b> pages indexed`;
+ const total=d.pages||1;
+ $("tierbar").innerHTML=TIERS.filter(([k])=>d.tiers[k]).map(([k])=>
+  `<i style="flex:${d.tiers[k]};opacity:${TIER_ALPHA[k]}" title="${k}: ${d.tiers[k]}"></i>`).join("");
+ $("tierrows").innerHTML=TIERS.filter(([k])=>d.tiers[k]).map(([k,name])=>
+  `<div><span><i class="sw" style="opacity:${TIER_ALPHA[k]}"></i>${name}</span>`+
+  `<b>${d.tiers[k]} <span style="color:var(--pencil)">· ${(100*d.tiers[k]/total).toFixed(1)}%</span></b></div>`).join("");
+ // engine counts on schematic
+ $("c-v27").textContent=(d.tiers.vision_agreed+d.tiers.vision_minor+d.tiers.vision_conflict+ (d.tiers.vision||0)||0)?`${(d.tiers.vision_agreed||0)+(d.tiers.vision_minor||0)+(d.tiers.vision_conflict||0)+(d.tiers.vision||0)+(d.tiers.vision_blank||0)} pages served`:"—";
+ $("c-haiku").textContent=`${d.tiers.vision_single||0} pages served`;
+ $("c-rec").textContent=`${(d.tiers.vision_agreed||0)+(d.tiers.vision_minor||0)+(d.tiers.vision_conflict||0)+(d.tiers.vision_blank||0)+(d.tiers.vision_single||0)} decided`;
+ $("c-index").textContent=`${d.pages} pages`;
+ $("c-agree").textContent=d.tiers.vision_agreed?`${d.tiers.vision_agreed} agree`:"—";
+ $("c-train").textContent=t.alive?`step ${t.step}/${t.total_steps}`:(t.adapter_saved?"adapter saved":"idle");
+ // meters
+ const s=d.system, m=[];
+ if(s.gpu){m.push(["GPU",`${s.gpu.util}%`,`${s.gpu.temp}°C · ${Math.round(s.gpu.power)} W`,s.gpu.util]);
+   m.push(["VRAM",`${(s.gpu.mem_used/1024).toFixed(1)} GB`,`of ${(s.gpu.mem_total/1024).toFixed(1)} GB`,100*s.gpu.mem_used/s.gpu.mem_total]);}
+ if(s.cpu_pct!=null)m.push(["CPU",`${s.cpu_pct}%`,"all cores",s.cpu_pct]);
+ if(s.mem)m.push(["RAM",`${s.mem.used_gb} GB`,`of ${s.mem.total_gb} GB`,100*s.mem.used_gb/s.mem.total_gb]);
+ if(s.disk)m.push(["Disk",`${s.disk.used_gb} GB`,`of ${s.disk.total_gb} GB`,100*s.disk.used_gb/s.disk.total_gb]);
+ $("meters").innerHTML=m.map(([n,v,sub,pct])=>{const hot=pct>=90;
+  return `<div class="meter"><div class="lbl">${n}</div><b class="${hot?'hotlbl':''}">${v}</b><small>${sub}${hot?" · high":""}</small>
+   <div class="gauge ${hot?'hot':''}"><i style="width:${Math.min(100,pct).toFixed(1)}%"></i></div></div>`;}).join("");
+}
+function drawSpark(curve){
+ const svg=$("spark");
+ if(!curve||curve.length<2){svg.innerHTML="";return;}
+ const W=440,H=84,P=4, xs=curve.map(c=>c[0]), ys=curve.map(c=>c[1]);
+ const x0=xs[0],x1=xs[xs.length-1],ymin=Math.min(...ys),ymax=Math.max(...ys);
+ const X=s=>P+(W-2*P)*(s-x0)/Math.max(1,x1-x0);
+ const Y=v=>H-10-(H-24)*(v-ymin)/Math.max(1e-9,ymax-ymin);
+ const pts=curve.map(c=>`${X(c[0]).toFixed(1)},${Y(c[1]).toFixed(1)}`).join(" ");
+ svg.innerHTML=`<line class="axis" x1="0" y1="${H-10}" x2="${W}" y2="${H-10}"/>
+  <polyline points="${pts}"/>
+  <text x="2" y="10">${ymax.toFixed(3)}</text><text x="2" y="${H-14}">${ymin.toFixed(3)}</text>
+  <text x="${W-2}" y="${H-1}" text-anchor="end">loss by step</text>
+  <line class="cursor" id="cur" y1="0" y2="${H-10}"/>
+  <text class="curlab" id="curlab" y="12" text-anchor="middle"></text>`;
+ svg.onmousemove=e=>{
+  const r=svg.getBoundingClientRect(), fx=(e.clientX-r.left)*W/r.width;
+  let best=0,bd=1e9;
+  curve.forEach((c,i)=>{const d=Math.abs(X(c[0])-fx); if(d<bd){bd=d;best=i;}});
+  const c=curve[best],cx=X(c[0]);
+  const cur=$("cur"),lab=$("curlab");
+  cur.style.display="block";lab.style.display="block";
+  cur.setAttribute("x1",cx);cur.setAttribute("x2",cx);
+  lab.setAttribute("x",Math.max(40,Math.min(W-40,cx)));
+  lab.textContent=`step ${c[0]} · ${c[1].toFixed(4)}`;};
+ svg.onmouseleave=()=>{$("cur").style.display="none";$("curlab").style.display="none";};
+}
+async function refresh(){
+ const d=await (await fetch("/api/status")).json(); const t=d.totals;
+ $("sub").textContent=`${t.done} / ${d.n_reports} reports complete · ${t.pages_rendered} pages rendered · data ${d.disk} on disk`;
+ const hd="<tr><th>report</th><th>series</th><th>decade</th><th class=numcol>pages</th>"+
+   "<th class=numcol>raw</th><th class=numcol>deskew</th><th class=numcol>baseline</th>"+
+   "<th>dict share</th><th class=numcol>flags</th><th>status</th></tr>";
+ $("tbl").innerHTML=hd+d.reports.map(r=>{
+  const ds=r.dict_share==null?"":`<span class=mini><i style="width:${Math.round(r.dict_share*100)}%"></i></span>${r.dict_share.toFixed(3)}`;
+  return `<tr><td>${r.report}</td><td>${r.series}</td><td>${r.decade}</td>`+
+   `<td class=numcol>${r.pages??""}</td><td class=numcol>${r.raw}</td><td class=numcol>${r.deskewed}</td>`+
+   `<td class=numcol>${r.baseline}</td><td>${ds}</td><td class=numcol>${r.flags||""}</td>`+
+   `<td class="chip s-${r.status}" title="${r.error||""}">${CHIP[r.status]}</td></tr>`;}).join("");
+ $("log").textContent=d.log_tail.map(e=>{
+   const{ts,event,...k}=e;return `${ts}  ${event}  `+
+     Object.entries(k).map(([a,b])=>`${a}=${b}`).join(" ");}).reverse().join("\n");
+}
+const fmt=(v,d=2)=>v==null?"":(+v).toFixed(d);
+async function perf(){
+ const d=await (await fetch("/api/perf")).json();
+ const hd="<tr><th>step</th><th class=numcol>pages</th><th class=numcol>coverage</th>"+
+   "<th class=numcol>median s</th><th class=numcol>mean s</th><th class=numcol>p90 s</th>"+
+   "<th class=numcol>total h</th><th class=numcol>retries</th><th class=numcol>failed</th></tr>";
+ $("ptbl").innerHTML=hd+d.steps.map(x=>
+  `<tr><td>${x.step}${x.active?' <span class="chip s-processing">⟳</span>':""}</td>`+
+  `<td class=numcol>${x.n??""}</td><td class=numcol>${x.coverage==null?"":Math.round(x.coverage*100)+"%"}</td>`+
+  `<td class=numcol>${fmt(x.median)}</td><td class=numcol>${fmt(x.mean)}</td><td class=numcol>${fmt(x.p90)}</td>`+
+  `<td class=numcol>${fmt(x.total_h)}</td><td class=numcol>${x.retried??""}</td><td class=numcol>${x.vision_failed??""}</td></tr>`).join("");
+ $("pnote").textContent="per-page wall time by pass · vision rows include loop-guard retry time · CPU-step stats refresh every 15 min";
+}
+live(); setInterval(live,5000);
+refresh(); setInterval(refresh,15000);
+perf(); setInterval(perf,30000);
+</script></body></html>
